@@ -4,7 +4,7 @@ const protect = require("../middlewares/authMiddleware"); // JWT pour sécuriser
 
 const router = express.Router();
 
-router.post("/", protect, addIngredient);
+router.post("/add", protect, addIngredient);
 router.get("/search", protect, searchIngredients);
 router.get("/all-ingredients", protect, getAllIngredient);
 
