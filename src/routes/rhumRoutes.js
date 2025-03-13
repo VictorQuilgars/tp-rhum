@@ -1,9 +1,10 @@
 const express = require("express");
 const protect = require("../middlewares/authMiddleware"); // JWT pour sécuriser
-const { getAllRhums } = require("../controllers/rhumControllers");
+const { getAllRhums, getRhumsWithFilter } = require("../controllers/rhumControllers");
 
 const router = express.Router();
 
-router.get("/getRhums", protect, getAllRhums);
+router.get("/", protect, getAllRhums);
+router.get("/getRhums", protect, getRhumsWithFilter);
 
 module.exports = router;
