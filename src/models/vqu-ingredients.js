@@ -34,4 +34,4 @@ const IngredientSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model("Ingredient", IngredientSchema);
+module.exports = mongoose.model("vqu-ingredients", IngredientSchema);
