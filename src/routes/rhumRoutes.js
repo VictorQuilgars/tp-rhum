@@ -4,6 +4,6 @@ const { getAllRhums } = require("../controllers/rhumControllers");
 
 const router = express.Router();
 
-router.get("/", protect, getAllRhums);
+router.get("/getRhums", protect, getAllRhums);
 
 module.exports = router;
