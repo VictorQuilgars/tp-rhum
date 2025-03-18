@@ -22,3 +22,7 @@ exports.getAllRecettes = async () => {
 exports.getMyRecettes = async (userId) => {
   return await Recette.find({ user: userId });
 }
+
+exports.updateRecette = async (recetteId, data) => {
+  return await Recette.findByIdAndUpdate(recetteId, data, { new: true });
+}
