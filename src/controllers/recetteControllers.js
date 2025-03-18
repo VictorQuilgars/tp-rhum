@@ -1,4 +1,4 @@
-const Recette = require('../models/vqu-recettes');
+const recetteService = require('../services/recetteService');
 
 exports.createRecette = async (req, res) => {
   const { nom, rhum, ingredients, instructions, publique } = req.body;
@@ -7,16 +7,16 @@ exports.createRecette = async (req, res) => {
     return res.status(400).json({ message: 'Tous les champs requis doivent être remplis.' });
   }
 
-  try {
-    const nouvelleRecette = new Recette({
-      nom,
-      rhum,
-      ingredients,
-      instructions,
-      publique
-    });
+  const recetteData = {
+    nom,
+    rhum,
+    ingredients,
+    instructions,
+    publique: publique || false 
+  };
 
-    const recetteSauvee = await nouvelleRecette.save();
+  try {
+    const recetteSauvee = await recetteService.createRecette(recetteData);
     res.status(201).json(recetteSauvee);
   } catch (error) {
     res.status(500).json({ message: error.message });
