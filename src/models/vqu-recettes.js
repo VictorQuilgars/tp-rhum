@@ -12,6 +12,7 @@ const recetteSchema = new mongoose.Schema({
   ],
   instructions: { type: [String], required: true },
   publique: { type: Boolean, default: false },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 },

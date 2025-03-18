@@ -12,7 +12,8 @@ exports.createRecette = async (req, res) => {
     rhum,
     ingredients,
     instructions,
-    publique: publique || false 
+    publique: publique || false,
+    user: req.user._id
   };
 
   try {
@@ -26,6 +27,15 @@ exports.createRecette = async (req, res) => {
 exports.getAllRecettes = async (req, res) => {  
   try {
     const recettes = await recetteService.getAllRecettes();
+    res.status(200).json(recettes);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+exports.getMyRecettes = async (req, res) => {
+  try {
+    const recettes = await recetteService.getMyRecettes(req.user._id);
     res.status(200).json(recettes);
   } catch (error) {
     res.status(500).json({ message: error.message });

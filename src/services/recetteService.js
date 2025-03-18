@@ -1,14 +1,15 @@
 const Recette = require('../models/vqu-recettes');
 
 exports.createRecette = async (data) => {
-  const { nom, rhum, ingredients, instructions, publique } = data;
+  const { nom, rhum, ingredients, instructions, publique, user } = data;
 
   const nouvelleRecette = new Recette({
     nom,
     rhum,
     ingredients,
     instructions,
-    publique
+    publique, 
+    user
   });
 
   return await nouvelleRecette.save();
@@ -17,3 +18,7 @@ exports.createRecette = async (data) => {
 exports.getAllRecettes = async () => {
   return await Recette.find({ publique: true });
 };
+
+exports.getMyRecettes = async (userId) => {
+  return await Recette.find({ user: userId });
+}
