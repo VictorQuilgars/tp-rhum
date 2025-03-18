@@ -22,3 +22,12 @@ exports.createRecette = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getAllRecettes = async (req, res) => {  
+  try {
+    const recettes = await recetteService.getAllRecettes();
+    res.status(200).json(recettes);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}

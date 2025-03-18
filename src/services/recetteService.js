@@ -13,3 +13,7 @@ exports.createRecette = async (data) => {
 
   return await nouvelleRecette.save();
 };
+
+exports.getAllRecettes = async () => {
+  return await Recette.find({ publique: true });
+};
