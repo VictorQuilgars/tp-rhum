@@ -1,8 +1,8 @@
-const Rhum = require('../models/rhums');
+const rhumService = require('../services/rhumService');
 
 exports.getAllRhums = async (req, res) => {
   try {
-    const rhums = await Rhum.find();
+    const rhums = await rhumService.getAllRhums();
     res.status(200).json(rhums);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -12,11 +12,9 @@ exports.getAllRhums = async (req, res) => {
 exports.getRhumsWithFilter = async (req, res) => {
   try {
     const filters = req.query;
-    const rhums = await Rhum.find(filters);
+    const rhums = await rhumService.getRhumsWithFilter(filters);
     res.status(200).json(rhums);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
-
