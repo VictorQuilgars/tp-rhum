@@ -15,7 +15,6 @@ const recetteSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 },
-{ collection: "recettes" }
 );
 
-module.exports = mongoose.model('Recette', recetteSchema);
+module.exports = mongoose.model('vqu-recettes', recetteSchema);
