@@ -1,4 +1,4 @@
-const Ingredient = require("../models/vqu-ingredients");
+const ingredientService = require('../services/ingredientService');
 
 exports.addIngredient = async (req, res) => {
   try {
@@ -13,63 +13,37 @@ exports.addIngredient = async (req, res) => {
       return res.status(400).json({ message: "Type d'ingrédient invalide." });
     }
 
-    if (await Ingredient.findOne({ nom })) {
-      return res.status(400).json({ message: "Cet ingrédient existe déjà." });
-    }
-
     if (prix <= 0) {
       return res.status(400).json({ message: "Le prix doit être supérieur à 0." });
     }
 
-    const newIngredient = new Ingredient({
-      nom,
-      type,
-      magasin,
-      prix,
-      description
-    });
+    const newIngredient = await ingredientService.createIngredient(req.body);
+    res.status(201).json(newIngredient);
+  } catch (error) {
+    if (error.message === "Cet ingrédient existe déjà.") {
+      res.status(409).json({ message: error.message }); // Conflit : l'ingrédient existe déjà
+    } else {
+      res.status(500).json({ message: "Erreur serveur", error });
+    }
+  }
+};
 
-    await newIngredient.save();
-    
-    res.status(201).json({
-      message: "Ingrédient ajouté avec succès !",
-      ingredient: newIngredient
+exports.searchIngredients = async (req, res) => {
+  try {
+    const ingredients = await ingredientService.searchIngredients(req.query);
+    res.status(200).json({
+      message: "Résultats de la recherche",
+      total: ingredients.length,
+      ingredients,
     });
   } catch (error) {
     res.status(500).json({ message: "Erreur serveur", error });
   }
 };
 
-exports.searchIngredients = async (req, res) => {
-    try {
-        const { nom, type } = req.query;
-
-        let filter = {};
-
-        if (nom) {
-        filter.nom = { $regex: nom, $options: "i" }; // Recherche insensible à la casse
-        }
-
-        if (type) {
-        filter.type = type;
-        }
-
-        const ingredients = await Ingredient.find(filter);
-
-        res.status(200).json({
-        message: "Résultats de la recherche",
-        total: ingredients.length,
-        ingredients,
-        });
-    } catch (error) {
-        res.status(500).json({ message: "Erreur serveur", error });
-    }
-};
-
-exports.getAllIngredient = async (req, res) => 
-{
+exports.getAllIngredients = async (req, res) => {
   try {
-    const ingredients = await Ingredient.find();
+    const ingredients = await ingredientService.getAllIngredients();
     res.status(200).json({
       message: "Liste de tous les ingrédients",
       total: ingredients.length,
@@ -78,4 +52,4 @@ exports.getAllIngredient = async (req, res) =>
   } catch (error) {
     res.status(500).json({ message: "Erreur serveur", error });
   }
-}
+};
