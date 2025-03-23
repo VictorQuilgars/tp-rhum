@@ -2,9 +2,20 @@ const authService = require('../services/authService');
 
 exports.register = async (req, res) => {
   try {
-    const { nom, email, password, adresse } = req.body;
-    const result = await authService.register({ nom, email, password, adresse });
-    res.status(201).json(result);
+    const {token, userId} = await authService.register(req.body);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // SSL en prod
+      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 jours
+    });
+  
+    res.status(200).json({
+      message: "Inscription réussie",
+      userId: userId
+    });
+
   } catch (error) {
     if (error.message === 'Email already in use') {
       res.status(400).json({ message: error.message });
@@ -17,13 +28,26 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const result = await authService.login({ email, password });
-    res.status(200).json(result);
+    const {token, userId} = await authService.login({ email, password });
+  
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // SSL en prod
+      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 jours
+    });
+  
+    res.status(200).json({
+      message: "Connexion réussie",
+      userId: userId
+    });
+
   } catch (error) {
+    console.log(error);
     if (error.message === 'Wrong email or password') {
       res.status(400).json({ message: error.message });
     } else {
-      res.status(500).json({ message: 'Server error' });
+      res.status(500).json({ message: error.message});
     }
   }
 };
