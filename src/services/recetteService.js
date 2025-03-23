@@ -24,5 +24,5 @@ exports.getMyRecettes = async (userId) => {
 }
 
 exports.updateRecette = async (recetteId, data) => {
-  return await Recette.findByIdAndUpdate(recetteId, data, { new: true });
-}
+  return await Recette.findByIdAndUpdate(recetteId, data, { new: true, runValidators: true });
+};

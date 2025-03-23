@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const generateToken = (user) => {
-  return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+  return jwt.sign({ user: user }, process.env.JWT_SECRET, {
     expiresIn: '7d',
   });
 };
@@ -22,8 +22,6 @@ exports.register = async (data) => {
     password : data.password,
     adresse : data.adresse,
   });
-
-  console.log(user);
 
   // Sauvegarder l'utilisateur dans la base de données
   await user.save();

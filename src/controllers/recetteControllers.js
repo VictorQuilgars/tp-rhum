@@ -43,24 +43,16 @@ exports.getMyRecettes = async (req, res) => {
 }
 
 exports.updateRecette = async (req, res) => {
-  const { nom, rhum, ingredients, instructions, publique } = req.body;
-
-  if (!nom || !rhum || !ingredients || ingredients.length === 0 || !instructions || instructions.length === 0) {
-    return res.status(400).json({ message: 'Tous les champs requis doivent être remplis.' });
-  }
-
-  const recetteData = {
-    nom,
-    rhum,
-    ingredients,
-    instructions,
-    publique: publique || false
-  };
+  const { id } = req.params;
+  const updates = req.body;
 
   try {
-    const recetteMiseAJour = await recetteService.updateRecette(req.params.id, recetteData);
-    res.status(200).json(recetteMiseAJour);
+    const updatedRecette = await recetteService.updateRecette(id, updates);
+    if (!updatedRecette) {
+      return res.status(404).json({ message: 'Recette non trouvée' });
+    }
+    res.status(200).json(updatedRecette);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
