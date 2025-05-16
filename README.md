@@ -82,3 +82,15 @@ Créez un fichier .env à la racine du projet et ajoutez les variables présente
 - `GET /api/recettes/mes-recettes` : Lister les recettes de l'utilisateur connecté
 - `PATCH /api/recettes/update/:id` : Modifier une recette
 
+## Test
+
+Pour réaliser les tests unitaires de l'API, vous pouvez suivre les étapes suivantes : 
+
+1. Placez le terminal à la racine du projet :
+   ```sh
+   cd <nom_du_projet>
+
+1. Appeler la commande test :
+   ```sh
+   npm run test
+
