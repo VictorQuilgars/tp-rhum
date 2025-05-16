@@ -304,11 +304,12 @@
     // Recherche ingrédient
     async function searchIngredients() {
       const query = document.getElementById("search-ingredient").value;
-      const res = await fetch(`${api}/api/ingredients/search?query=${query}`);
+      const res = await fetch(`${api}/api/ingredients/search?nom=${query}`);
       const data = await res.json();
 
+
       const container = document.getElementById("search-results");
-      container.innerHTML = ""; // Reset
+      container.innerHTML = "";
 
       if (!data.ingredients || data.ingredients.length === 0) {
         container.innerHTML = "<p>Aucun ingrédient trouvé.</p>";
