@@ -1,5 +1,5 @@
 const express = require("express");
-const { register, login } = require("../controllers/authController");
+const { register, login, logout } = require("../controllers/authController");
 const protect = require("../middlewares/authMiddleware"); 
 
 const router = express.Router();
@@ -78,6 +78,17 @@ router.post("/register", register);
  *         description: Email ou mot de passe incorrect
  */
 router.post("/login", login);
+
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   get:
+ *     summary: Déconnecte l'utilisateur
+ *     responses:
+ *       200:
+ *         description: Déconnexion réussie
+ */
+router.get("/logout", logout);
 
 router.get("/me", protect, async (req, res) => {
     try {

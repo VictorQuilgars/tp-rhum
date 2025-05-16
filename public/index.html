@@ -115,6 +115,9 @@
 
   <h1>🧉 Interface API Rhum Arrangé</h1>
 
+  <button id="logout-btn" style="background-color: red" onclick="logout()">Se déconnecter</button>
+
+
   <!-- 🔐 Connexion -->
   <h2 id="login">Connexion</h2>
   <form id="login-form">
@@ -176,6 +179,17 @@
 
     const api = "http://localhost:8000";
 
+    async function logout(){
+        const res = await fetch(`${api}/api/auth/logout`, {
+            method: "GET",
+            credentials: "include",
+        });
+        const data = await res.json();
+        console.log(data);
+        alert(data.message || "Déconnexion réussie");
+        checkAuth();
+    }
+
     async function checkAuth() {
         try {
           const res = await fetch(`${api}/api/auth/me`, {
@@ -230,6 +244,7 @@
       const data = await res.json();
       console.log(data);
       alert(data.message || data.status);
+      checkAuth();
     });
 
     // Inscription

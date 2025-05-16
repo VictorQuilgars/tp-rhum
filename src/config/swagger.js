@@ -19,7 +19,7 @@ const options = {
         cookieAuth: {
           type: "apiKey",
           in: "cookie",
-          name: "token", // ⚠️ le nom de ton cookie JWT
+          name: "token", 
         },
       },
     },
@@ -29,7 +29,7 @@ const options = {
       },
     ],
   },
-  apis: ["./src/routes/*.js"], // où sont les commentaires Swagger dans les routes
+  apis: ["./src/routes/*.js"], 
 };
 
 const swaggerSpec = swaggerJSDoc(options);
