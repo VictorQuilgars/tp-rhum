@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
 const path = require("path");
+const helmet = require('helmet')
 
 dotenv.config();
 connectDB();
@@ -13,6 +14,8 @@ connectDB();
 const app = express();
 
 app.use(express.static(path.join(__dirname, "../public")));
+
+app.use(helmet())
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json());
