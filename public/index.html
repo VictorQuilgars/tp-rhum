@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Interface API Rhum</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        margin: 0;
+        padding: 0;
+      }
+  
+      h1 {
+        text-align: center;
+        background: #3c3c3c;
+        color: #fff;
+        padding: 20px 0;
+        margin: 0;
+      }
+  
+      .container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 20px;
+        background: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
+      }
+  
+      h2 {
+        border-bottom: 2px solid #eee;
+        padding-bottom: 5px;
+      }
+  
+      form {
+        margin-bottom: 20px;
+      }
+  
+      input, button {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+  
+      button {
+        background-color: #009579;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s ease;
+      }
+  
+      button:hover {
+        background-color: #007a63;
+      }
+  
+      pre {
+        background: #eee;
+        padding: 15px;
+        border-radius: 5px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+  
+      .private-section {
+        margin-top: 30px;
+      }
+  
+      .hidden {
+        display: none;
+      }
+
+      .card-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 10px;
+      }
+
+      .card {
+        flex: 0 1 calc(33.333% - 10px); /* 3 cartes par ligne */
+        background-color: #ffffff;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        font-size: 0.9rem;
+      }
+
+      .card h3 {
+        margin-top: 0;
+        font-size: 1.1rem;
+        color: #009579;
+      }
+
+      @media screen and (max-width: 768px) {
+        .card {
+          flex: 0 1 calc(50% - 10px); /* 2 cartes par ligne sur tablette */
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .card {
+          flex: 0 1 100%; /* 1 carte par ligne sur mobile */
+        }
+      }
+    </style>
+  </head>
+<body>
+
+  <h1>🧉 Interface API Rhum Arrangé</h1>
+
+  <!-- 🔐 Connexion -->
+  <h2 id="login">Connexion</h2>
+  <form id="login-form">
+    <input type="email" id="login-email" placeholder="Email" required />
+    <input type="password" id="login-password" placeholder="Mot de passe" required />
+    <button type="submit">Se connecter</button>
+  </form>
+
+  <!-- 👤 Inscription -->
+  <h2 id="register">Inscription</h2>
+  <form id="register-form">
+    <input type="text" id="register-nom" placeholder="Nom" required />
+    <input type="email" id="register-email" placeholder="Email" required />
+    <input type="password" id="register-password" placeholder="Mot de passe" required />
+    <input type="text" id="register-adresse" placeholder="Adresse" required />
+    <button type="submit">S'inscrire</button>
+  </form>
+
+  <!-- 🍍 Ajout Ingrédient -->
+  <div class="private-section" style="display: none;">
+    <h2>Ajouter un ingrédient</h2>
+    <form id="ingredient-form">
+      <input type="text" id="ingredient-nom" placeholder="Nom de l'ingrédient" required />
+      <input type="text" id="ingredient-type" placeholder="Type (fruits, épices, etc.)" required />
+      <input type="text" id="magasin-nom" placeholder="Nom du magasin" required />
+      <input type="text" id="magasin-adresse" placeholder="Adresse du magasin" required />
+      <input type="number" id="magasin-latitude" placeholder="Latitude" step="any" required />
+      <input type="number" id="magasin-longitude" placeholder="Longitude" step="any" required />
+      <input type="number" id="ingredient-prix" placeholder="Prix" step="0.01" required />
+      <input type="text" id="ingredient-description" placeholder="Description" />
+      <button type="submit">Ajouter</button>
+    </form>
+  </div>
+
+  <!-- 🔍 Rechercher des ingrédients -->
+  <div class="private-section" style="display: none;">
+    <h2>Rechercher des ingrédients</h2>
+    <input type="text" id="search-ingredient" placeholder="Nom ou type" />
+    <button onclick="searchIngredients()">Rechercher</button>
+    <pre id="search-results"></pre>
+  </div>
+
+  <!-- 🥃 Afficher tous les rhums -->
+  <div class="private-section" style="display: none;">
+    <h2>Liste des rhums</h2>
+    <button onclick="fetchRhums()">Afficher les rhums</button>
+    <pre id="rhums-list"></pre>
+  </div>
+
+  <!-- 📜 Recettes publiques -->
+  <div class="private-section" style="display: none;">
+    <h2>Recettes publiques</h2>
+    <button onclick="fetchRecettes()">Voir les recettes</button>
+    <pre id="recettes-list"></pre>
+  </div>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", checkAuth);
+
+    const api = "http://localhost:8000";
+
+    async function checkAuth() {
+        try {
+          const res = await fetch(`${api}/api/auth/me`, {
+              credentials: "include",
+          });
+          
+          console.log("🔐 Vérification de l'authentification...");
+          console.log(res);
+
+          if (res.ok) {
+              const user = await res.json();
+              console.log("✅ Connecté :", user);
+
+              const privateSections = document.getElementsByClassName("private-section");
+              for (let i = 0; i < privateSections.length; i++) {
+                privateSections[i].style.display = "block";
+              }
+              //document.getElementById("logout-btn").style.display = "inline-block";
+              document.getElementById("login-form").style.display = "none";
+              document.getElementById("login").style.display = "none";
+              document.getElementById("register-form").style.display = "none";
+              document.getElementById("register").style.display = "none";
+          } else {
+              throw new Error("Non connecté");
+          }
+        } catch (err) {
+        console.log("❌ Non connecté");
+        const privateSections = document.getElementsByClassName("private-section");
+        for (let i = 0; i < privateSections.length; i++) {
+          privateSections[i].style.display = "none";
+        }
+        //document.getElementById("logout-btn").style.display = "none";
+        document.getElementById("login-form").style.display = "block";
+        document.getElementById("login").style.display = "block";
+        document.getElementById("register-form").style.display = "block";
+        document.getElementById("register").style.display = "block";
+        }
+    }
+
+    // Connexion
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      const res = await fetch(`${api}/api/auth/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      console.log(data);
+      alert(data.message || data.status);
+    });
+
+    // Inscription
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nom = document.getElementById("register-nom").value;
+      const email = document.getElementById("register-email").value;
+      const password = document.getElementById("register-password").value;
+      const adresse = document.getElementById("register-adresse").value;
+
+      const res = await fetch(`${api}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom, email, password, adresse })
+      });
+      const data = await res.json();
+      alert(data.message || "Inscription réussie");
+    });
+
+    // Ajouter un ingrédient
+    document.getElementById("ingredient-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nom = document.getElementById("ingredient-nom").value;
+      const type = document.getElementById("ingredient-type").value;
+      const prix = parseFloat(document.getElementById("ingredient-prix").value);
+      const description = document.getElementById("ingredient-description").value;
+
+      const magasin = {
+        nom: document.getElementById("magasin-nom").value,
+        adresse: document.getElementById("magasin-adresse").value,
+        position: {
+          latitude: parseFloat(document.getElementById("magasin-latitude").value),
+          longitude: parseFloat(document.getElementById("magasin-longitude").value),
+        }
+      };
+
+      const body = {
+        nom,
+        type,
+        prix,
+        description,
+        magasin
+      };
+
+      const res = await fetch(`${api}/api/ingredients/add`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+      alert(data.message || "Ingrédient ajouté !");
+    });
+
+    // Recherche ingrédient
+    async function searchIngredients() {
+      const query = document.getElementById("search-ingredient").value;
+      const res = await fetch(`${api}/api/ingredients/search?query=${query}`);
+      const data = await res.json();
+
+      const container = document.getElementById("search-results");
+      container.innerHTML = ""; // Reset
+
+      if (!data.ingredients || data.ingredients.length === 0) {
+        container.innerHTML = "<p>Aucun ingrédient trouvé.</p>";
+        return;
+      }
+
+      const grid = document.createElement("div");
+      grid.classList.add("card-grid");
+
+      data.ingredients.forEach(ingredient => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        card.innerHTML = `
+          <h3>${ingredient.nom}</h3>
+          <p><strong>Type:</strong> ${ingredient.type}</p>
+          <p><strong>Prix:</strong> ${ingredient.prix.toFixed(2)} €</p>
+          <p><strong>Magasin:</strong><br>${ingredient.magasin.nom}<br>${ingredient.magasin.adresse}</p>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      container.appendChild(grid);
+    }
+
+    // Liste rhums
+    async function fetchRhums() {
+      const res = await fetch(`${api}/api/rhums/`);
+      const data = await res.json();
+      document.getElementById("rhums-list").textContent = JSON.stringify(data, null, 2);
+    }
+
+    // Liste recettes publiques
+    async function fetchRecettes() {
+      const res = await fetch(`${api}/api/recettes`);
+      const data = await res.json();
+      document.getElementById("recettes-list").textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
